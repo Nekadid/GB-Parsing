@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 from pprint import pprint
 import re
+import pandas as pd
 
 
 def salary_check(salary_in):
@@ -12,10 +13,10 @@ def salary_check(salary_in):
     salary_in_mod = re.sub('\xa0', ' ', salary_in)  # Преобразуем \xa0 в обычный пробел
 
     if re.fullmatch(r'^\bдо.*', salary_in_mod):
-        return {'top_salary': salary_in_mod, 'down_salary': 'None'}
+        return {'top_salary': re.search(r'(?<=до\s).*', salary_in_mod)[0], 'down_salary': 'None'}
     else:
         if re.fullmatch(r'^\bот.*', salary_in_mod):
-            return {'down_salary': salary_in_mod, 'top_salary': 'None'}
+            return {'down_salary': re.search(r'(?<=от\s).*', salary_in_mod)[0], 'top_salary': 'None'}
         else:
             if re.fullmatch(r'\b\d{1,}.*', salary_in_mod):
                 return {'down_salary': f'{re.search(pat1, salary_in_mod)[0]}{re.search(pat2, salary_in_mod)[0]}',
@@ -48,6 +49,7 @@ while True:
                         'top_salary': salary_check(vacancy_salary)['top_salary'],
                         'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0]}
         vacancies.append(vacancy_data)
+    break
     try:
         link = soup.find('a', {'class': 'bloko-button HH-Pager-Controls-Next HH-Pager-Control'})['href']
         main_link = f'https://hh.ru{link}'
@@ -55,3 +57,5 @@ while True:
         break
 pprint(vacancies)
 
+df_vacancies = pd.DataFrame(vacancies)
+print(df_vacancies)
