@@ -39,8 +39,8 @@ def salary_check(salary_in):  # разбирает получаемый диап
 
 
 vacancy_name = input('Введите название интресующей ваканисии на русском языке:')
-page_count_hh = int(input('Сколько первых вакансий с сайта www.hh.ru вывести результат:'))
-page_count_sj = int(input('Сколько первых вакансий с сайта www.superjob.ru вывести результат:'))
+page_count_hh = int(input('Сколько первых страниц сайта www.hh.ru по вакансии просмотреть вывести результат:'))
+page_count_sj = int(input('Сколько первых страниц сайта www.superjob.ru по вакансии просмотреть вывести результат:'))
 
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'}
@@ -53,13 +53,10 @@ i = 0
 while i != page_count_sj:
 
     html = requests.get(main_link, headers=header).text
-    # pprint(html)[0]
     soup = bs(html, 'lxml')
     vacancy_blok = soup.find('div', {'class': '_1ID8B'})
-    # pprint(vacancy_blok)
     vacancy_list = vacancy_blok.find_all('div',
                                          {'class': '_3zucV f-test-vacancy-item _3j3cA RwN9e _3tNK- _1NStQ _1I1pc'})
-    # pprint(vacancy_list)
 
     for vacancy in vacancy_list:
         pre_vacancy_link = vacancy.find('a')['href']
