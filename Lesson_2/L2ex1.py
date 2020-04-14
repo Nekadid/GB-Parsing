@@ -38,7 +38,7 @@ def salary_check(salary_in):  # разбирает получаемый диап
                     return {'top_salary': 'None', 'down_salary': 'None', 'salary_value': 'None'}
 
 
-vacancy_name = input('Введите название интресующей ваканисии на русском языке:')
+vacancy_look_name = input('Введите название интресующей ваканисии на русском языке:')
 page_count_hh = int(input('Сколько первых страниц сайта www.hh.ru по вакансии просмотреть вывести результат:'))
 page_count_sj = int(input('Сколько первых страниц сайта www.superjob.ru по вакансии просмотреть вывести результат:'))
 
@@ -47,7 +47,7 @@ header = {
 vacancies = []
 
 # Начинаем парсить https://www.superjob.ru/
-vacancy_name_trans = transliterate.translit(vacancy_name, reversed=True)
+vacancy_name_trans = transliterate.translit(vacancy_look_name, reversed=True)
 main_link = f'https://russia.superjob.ru/vakansii/{vacancy_name_trans}.html'
 i = 0
 while i != page_count_sj:
@@ -80,7 +80,7 @@ while i != page_count_sj:
         break
 
 # Начинаем парсить hh.ru
-main_link = f'https://hh.ru/search/vacancy?area=1&st=searchVacancy&text={vacancy_name}'
+main_link = f'https://hh.ru/search/vacancy?area=1&st=searchVacancy&text={vacancy_look_name}'
 i = 0
 while i != page_count_hh:
 
