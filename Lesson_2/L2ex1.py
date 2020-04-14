@@ -46,12 +46,49 @@ header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'}
 vacancies = []
 
+# Начинаем парсить https://www.superjob.ru/
+vacancy_name_trans = transliterate.translit(vacancy_name, reversed=True)
+main_link = f'https://russia.superjob.ru/vakansii/{vacancy_name_trans}.html'
+i = 0
+while i != page_count_sj:
+
+    html = requests.get(main_link, headers=header).text
+    # pprint(html)[0]
+    soup = bs(html, 'lxml')
+    vacancy_blok = soup.find('div', {'class': '_1ID8B'})
+    # pprint(vacancy_blok)
+    vacancy_list = vacancy_blok.find_all('div',
+                                         {'class': '_3zucV f-test-vacancy-item _3j3cA RwN9e _3tNK- _1NStQ _1I1pc'})
+    # pprint(vacancy_list)
+
+    for vacancy in vacancy_list:
+        pre_vacancy_link = vacancy.find('a')['href']
+        vacancy_link = f'https://russia.superjob.ru{pre_vacancy_link}'
+        vacancy_name = vacancy.find('a').getText()
+        vacancy_salary = vacancy.find('span', {
+            'class': '_3mfro _2Wp8I _31tpt f-test-text-company-item-salary PlM3e _2JVkc _2VHxz'}).getText()
+
+        vacancy_data = {'name': vacancy_name,
+                        'link': vacancy_link,
+                        'down_salary': salary_check(vacancy_salary)['down_salary'],
+                        'top_salary': salary_check(vacancy_salary)['top_salary'],
+                        'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0],
+                        'salary_value': salary_check(vacancy_salary)['salary_value']}
+        vacancies.append(vacancy_data)
+    try:
+        link = soup.find('a', {'class': 'icMQ_ _1_Cht _3ze9n f-test-button-dalshe f-test-link-Dalshe'})['href']
+        main_link = f'https://russia.superjob.ru{link}'
+        i += 1
+    except TypeError:
+        break
+
 # Начинаем парсить hh.ru
 main_link = f'https://hh.ru/search/vacancy?area=1&st=searchVacancy&text={vacancy_name}'
 i = 0
 while i != page_count_hh:
 
     html = requests.get(main_link, headers=header).text
+    # pprint(html)[0]
     soup = bs(html, 'lxml')
     vacancy_blok = soup.find_all('div', {'class': 'vacancy-serp'})[0]
     vacancy_list = vacancy_blok.find_all('div', {'class': 'vacancy-serp-item'})
@@ -71,39 +108,6 @@ while i != page_count_hh:
     try:
         link = soup.find('a', {'class': 'bloko-button HH-Pager-Controls-Next HH-Pager-Control'})['href']
         main_link = f'https://hh.ru{link}'
-        i += 1
-    except TypeError:
-        break
-
-# Начинаем парсить https://www.superjob.ru/
-vacancy_name_trans = transliterate.translit(vacancy_name, reversed=True)
-main_link = f'https://russia.superjob.ru/vakansii/{vacancy_name_trans}.html'
-i = 0
-while i != page_count_sj:
-
-    html = requests.get(main_link, headers=header).text
-    soup = bs(html, 'lxml')
-    vacancy_blok = soup.find('div', {'class': '_1ID8B'})
-    # pprint(vacancy_blok)
-    vacancy_list = vacancy_blok.find_all('div', {'class': '_3zucV f-test-vacancy-item _3j3cA RwN9e _3tNK- _1NStQ _1I1pc'})
-    # pprint(vacancy_list)
-
-    for vacancy in vacancy_list:
-        pre_vacancy_link = vacancy.find('a')['href']
-        vacancy_link = f'https://russia.superjob.ru{pre_vacancy_link}'
-        vacancy_name = vacancy.find('a').getText()
-        vacancy_salary = vacancy.find('span', {'class': '_3mfro _2Wp8I _31tpt f-test-text-company-item-salary PlM3e _2JVkc _2VHxz'}).getText()
-
-        vacancy_data = {'name': vacancy_name,
-                        'link': vacancy_link,
-                        'down_salary': salary_check(vacancy_salary)['down_salary'],
-                        'top_salary': salary_check(vacancy_salary)['top_salary'],
-                        'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0],
-                        'salary_value': salary_check(vacancy_salary)['salary_value']}
-        vacancies.append(vacancy_data)
-    try:
-        link = soup.find('a', {'class': 'icMQ_ _1_Cht _3ze9n f-test-button-dalshe f-test-link-Dalshe'})['href']
-        main_link = f'https://russia.superjob.ru{link}'
         i += 1
     except TypeError:
         break
