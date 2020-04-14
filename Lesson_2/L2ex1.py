@@ -39,8 +39,8 @@ def salary_check(salary_in):  # разбирает получаемый диап
 
 
 vacancy_name = input('Введите название интресующей ваканисии на русском языке:')
-page_count_hh = int(input('Со скольки первых страниц на сайте www.hh.ru вывести результат:'))
-page_count_sj = int(input('Со скольки первых страниц на сайте www.superjob.ru вывести результат:'))
+page_count_hh = int(input('Сколько первых записей на сайте www.hh.ru вывести результат:'))
+page_count_sj = int(input('Сколько первых записей на сайте www.superjob.ru вывести результат:'))
 
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'}
@@ -88,7 +88,6 @@ i = 0
 while i != page_count_hh:
 
     html = requests.get(main_link, headers=header).text
-    # pprint(html)[0]
     soup = bs(html, 'lxml')
     vacancy_blok = soup.find_all('div', {'class': 'vacancy-serp'})[0]
     vacancy_list = vacancy_blok.find_all('div', {'class': 'vacancy-serp-item'})
