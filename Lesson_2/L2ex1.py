@@ -38,9 +38,15 @@ def salary_check(salary_in):  # разбирает получаемый диап
                     return {'top_salary': 'None', 'down_salary': 'None', 'salary_value': 'None'}
 
 
-vacancy_look_name = input('Введите название интресующей ваканисии на русском языке:')
-page_count_hh = int(input('Сколько первых страниц сайта www.hh.ru по вакансии просмотреть вывести результат:'))
-page_count_sj = int(input('Сколько первых страниц сайта www.superjob.ru по вакансии просмотреть вывести результат:'))
+# vacancy_look_name = input('Введите название интресующей ваканисии на русском языке:')
+# page_count_hh = int(input('Сколько первых страниц сайта www.hh.ru по вакансии просмотреть вывести результат:'))
+# page_count_sj = int(input('Сколько первых страниц сайта www.superjob.ru по вакансии просмотреть вывести результат:'))
+
+vacancy_look_name = 'инженер'
+page_count_hh = 2
+page_count_sj = 2
+
+
 
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'}
@@ -110,3 +116,4 @@ while i != page_count_hh:
 
 df_vacancies = pd.DataFrame(vacancies)
 print(df_vacancies)
+df_vacancies.to_csv('df_vacancies.csv', sep=';', encoding='utf-8')
