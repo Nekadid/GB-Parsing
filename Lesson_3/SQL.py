@@ -19,6 +19,7 @@ class Vacancy(Base):
     salary_value = Column(String(255))
 
     def __init__(self, name, link, website_origin, down_salary, top_salary, salary_value):
+        self.id = id
         self.name = name
         self.link = link
         self.website_origin = website_origin
