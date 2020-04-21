@@ -24,11 +24,11 @@ def salary_check(salary_in):  # разбирает получаемый диап
     salary_in_mod = re.sub('(?<=\d)\s(?=—)', '', salary_in_mod)  # Убираем пробел sj
 
     if re.fullmatch(r'^\bдо.*', salary_in_mod):
-        return {'top_salary': int(re.search(r'(?<=до\s).*(?=\s)', salary_in_mod)[0]), 'down_salary': None,
+        return {'top_salary': int(re.search(r'(?<=до\s).*(?=\s)', salary_in_mod)[0]), 'down_salary': 0,
                 'salary_value': re.search(pat2, salary_in_mod)[0]}
     else:
         if re.fullmatch(r'^\bот.*', salary_in_mod):
-            return {'down_salary': int(re.search(r'(?<=от\s).*(?=\s)', salary_in_mod)[0]), 'top_salary': None,
+            return {'down_salary': int(re.search(r'(?<=от\s).*(?=\s)', salary_in_mod)[0]), 'top_salary': 0,
                     'salary_value': re.search(pat2, salary_in_mod)[0]}
         else:
             if re.fullmatch(r'\b\d{1,10}-\d{1,10}.*', salary_in_mod):
@@ -41,7 +41,7 @@ def salary_check(salary_in):  # разбирает получаемый диап
                             'top_salary': int(re.search(pat5, salary_in_mod)[0]),
                             'salary_value': re.search(pat2, salary_in_mod)[0]}
                 else:
-                    return {'top_salary': None, 'down_salary': None, 'salary_value': None}
+                    return {'top_salary': 0, 'down_salary': 0, 'salary_value': 0}
 
 # Для ручного ввоода раскоментить след. 3 строки:
 # vacancy_look_name = input('Введите название интресующей ваканисии на русском языке:')
