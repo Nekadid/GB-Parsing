@@ -26,7 +26,8 @@ class Vacancy(Base):
     top_salary = Column(Integer)
     salary_value = Column(String(255))
 
-    def __init__(self, name, link, website_origin, down_salary, top_salary, salary_value):
+    def __init__(self, id, name, link, website_origin, down_salary, top_salary, salary_value):
+        self.id = id
         self.name = name
         self.link = link
         self.website_origin = website_origin
@@ -35,7 +36,7 @@ class Vacancy(Base):
         self.salary_value = salary_value
 
     def __repr__(self):
-        return Vacancy(name=self.name, link=self.link, website_origin=self.website_origin, down_salary=self.down_salary,
+        return Vacancy(id=self.id , name=self.name, link=self.link, website_origin=self.website_origin, down_salary=self.down_salary,
                        top_salary=self.top_salary, salary_value=self.salary_value)
 
 
