@@ -28,9 +28,13 @@ class Vacancy(Base):
         self.salary_value = salary_value
 
     def __repr__(self):
-        return Vacancy(id=self.id, name=self.name, link=self.link, website_origin=self.website_origin,
-                       down_salary=self.down_salary,
-                       top_salary=self.top_salary, salary_value=self.salary_value)
+        return [self.id,
+                self.name,
+                self.link,
+                self.website_origin,
+                self.down_salary,
+                self.top_salary,
+                self.salary_value]
 
 
 Session = sessionmaker(bind=engine)
