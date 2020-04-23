@@ -45,6 +45,7 @@ def salary_check(salary_in):  # разбирает получаемый диап
                 else:
                     return {'top_salary': 0, 'down_salary': 0, 'salary_value': 0}
 
+
 # Для ручного ввоода раскоментить след. 3 строки:
 # vacancy_look_name = input('Введите название интресующей ваканисии на русском языке:')
 # page_count_hh = int(input('Сколько первых страниц сайта www.hh.ru по вакансии просмотреть вывести результат:'))
@@ -53,7 +54,7 @@ def salary_check(salary_in):  # разбирает получаемый диап
 # Для ручного ввоода закоментить след. 3 строки:
 vacancy_look_name = 'инженер'
 page_count_hh = 1
-page_count_sj = 0
+page_count_sj = 1
 
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'}
@@ -74,11 +75,14 @@ while i != page_count_sj:
     for vacancy in vacancy_list:
         pre_vacancy_link = vacancy.find('a')['href']
         vacancy_link = f'https://russia.superjob.ru{pre_vacancy_link}'
+        id = hashlib.md5(vacancy_link.encode('utf-8'))
         vacancy_name = vacancy.find('a').getText()
         vacancy_salary = vacancy.find('span', {
             'class': '_3mfro _2Wp8I _31tpt f-test-text-company-item-salary PlM3e _2JVkc _2VHxz'}).getText()
 
-        vacancy_data = {'name': vacancy_name,
+        vacancy_data = {
+                        'id': str(id.hexdigest()),
+                        'name': vacancy_name,
                         'link': vacancy_link,
                         'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0],
                         'down_salary': salary_check(vacancy_salary)['down_salary'],
@@ -109,13 +113,13 @@ while i != page_count_hh:
         vacancy_salary = vacancy.find('div', {'class': 'vacancy-serp-item__sidebar'}).getText()
 
         vacancy_data = {
-                        'id': str(id.hexdigest()),
-                        'name': vacancy_name,
-                        'link': vacancy_link,
-                        'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0],
-                        'down_salary': salary_check(vacancy_salary)['down_salary'],
-                        'top_salary': salary_check(vacancy_salary)['top_salary'],
-                        'salary_value': salary_check(vacancy_salary)['salary_value']}
+            'id': str(id.hexdigest()),
+            'name': vacancy_name,
+            'link': vacancy_link,
+            'website_origin': re.search(r'(?<=https://)\D{1,20}\.\D{1,3}(?=/)', main_link)[0],
+            'down_salary': salary_check(vacancy_salary)['down_salary'],
+            'top_salary': salary_check(vacancy_salary)['top_salary'],
+            'salary_value': salary_check(vacancy_salary)['salary_value']}
         vacancies.append(vacancy_data)
     try:
         link = soup.find('a', {'class': 'bloko-button HH-Pager-Controls-Next HH-Pager-Control'})['href']
@@ -124,14 +128,13 @@ while i != page_count_hh:
     except TypeError:
         break
 
-# df_vacancies = pd.DataFrame(vacancies) # запись результатов парсинга в Датафрейм
-
 # Раскоментить для выгрузки результатов парсинка в csv
 # df_vacancies.to_csv('df_vacancies.csv', sep=';', encoding='utf-8')
 
 engine = create_engine('mysql+pymysql://root:123@localhost:3306/new')
-
 Base = declarative_base()
+
+
 class Vacancy(Base):
     __tablename__ = 'vacancies'
     id = Column(String(255), primary_key=True, unique=True, autoincrement=False)
@@ -160,11 +163,10 @@ class Vacancy(Base):
                 self.top_salary,
                 self.salary_value]
 
+
 Session = sessionmaker(bind=engine)
 
 # Base.metadata.create_all(engine) #Содание таблицы в БД
-
-
 
 # Оформление результатов парсинга в виде списка (list_pars_vacancies) экземпляров класса Vacancy
 list_pars_vacancies = []
@@ -182,9 +184,9 @@ for i in vacancies:
 session = Session()
 # session.add_all(list_pars_vacancies) Для первичной загрузки
 
-
+# Для регулярной загрузки данных в БД:
 for V_pars in list_pars_vacancies:
-    BD_ans = session.query(Vacancy).filter_by(id = V_pars.id).first()
+    BD_ans = session.query(Vacancy).filter_by(id=V_pars.id).first()
     if BD_ans is not None:
         if BD_ans.id == V_pars.id:
             if BD_ans.name != V_pars.name:
@@ -204,9 +206,5 @@ for V_pars in list_pars_vacancies:
     else:
         session.add(V_pars)
 
-# BD_ans = session.query(Vacancy).filter_by(id = V_pars.id).first()
-# print(BD_ans.name)
-
-# session.add_all(data)
 session.commit()
 session.close()
