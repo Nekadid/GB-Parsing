@@ -1,13 +1,5 @@
-from bs4 import BeautifulSoup as bs
-import requests
-from pprint import pprint
-import re
-import pandas as pd
-import transliterate
-import sqlalchemy as db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
@@ -36,7 +28,8 @@ class Vacancy(Base):
         self.salary_value = salary_value
 
     def __repr__(self):
-        return Vacancy(id=self.id , name=self.name, link=self.link, website_origin=self.website_origin, down_salary=self.down_salary,
+        return Vacancy(id=self.id, name=self.name, link=self.link, website_origin=self.website_origin,
+                       down_salary=self.down_salary,
                        top_salary=self.top_salary, salary_value=self.salary_value)
 
 
